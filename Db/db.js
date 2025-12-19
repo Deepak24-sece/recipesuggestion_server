@@ -7,8 +7,7 @@ const connectDB = async () => {
         console.log('MongoDB Connected Successfully');
     } catch (error) {
         console.error('MongoDB Connection Error:', error.message);
-        // Exit process with failure so that the deployment platform knows the app is unhealthy
-        process.exit(1);
+        // Do not exit process, so we can return nice 503 errors
     }
 };
 

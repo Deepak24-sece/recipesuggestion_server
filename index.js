@@ -14,11 +14,28 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
-app.use(express.json());
-app.use(cors({
+const corsOptions = {
     origin: ['https://singular-boba-04e055.netlify.app', 'http://localhost:5173', 'http://localhost:5000'],
-    credentials: true
-}));
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+// Handle preflight requests explicitly
+app.options('*', cors(corsOptions));
+
+// Middleware to check DB connection
+app.use((req, res, next) => {
+    // 0: disconnected, 1: connected, 2: connecting, 3: disconnecting
+    if (mongoose.connection.readyState !== 1 && req.path.startsWith('/api')) {
+        return res.status(503).json({
+            message: 'Service Unavailable: Database not connected',
+            hint: 'Please check MONGODB_URI in environment variables'
+        });
+    }
+    next();
+});
 
 // Database Connection
 connectDB();
