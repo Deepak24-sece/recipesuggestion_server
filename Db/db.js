@@ -3,7 +3,9 @@ const mongoose = require('mongoose');
 const connectDB = async () => {
     try {
         console.log('Attempting to connect to MongoDB...');
-        await mongoose.connect(process.env.MONGODB_URI);
+        // Fix commonly added quotes or whitespace in Render env vars
+        const uri = process.env.MONGODB_URI.trim().replace(/^["']|["']$/g, '');
+        await mongoose.connect(uri);
         console.log('MongoDB Connected Successfully');
     } catch (error) {
         console.error('MongoDB Connection Error:', error.message);
