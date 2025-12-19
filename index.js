@@ -15,8 +15,8 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 const corsOptions = {
-    origin: ['https://singular-boba-04e055.netlify.app', 'http://localhost:5173', 'http://localhost:5000'],
-    credentials: true,
+    origin: '*', // Allow all origins for debugging to fix CORS definitively
+    credentials: false, // Must be false when using wildcard origin
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 };
@@ -25,20 +25,35 @@ app.use(cors(corsOptions));
 // Handle preflight requests explicitly
 app.options('*', cors(corsOptions));
 
+// Global error handling to prevent crashes
+process.on('uncaughtException', (err) => {
+    console.error('UNCAUGHT EXCEPTION:', err);
+    // Keep server alive if possible, or let it restart. Logging is key.
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('UNHANDLED REJECTION:', reason);
+});
+
 // Middleware to check DB connection
 app.use((req, res, next) => {
     // 0: disconnected, 1: connected, 2: connecting, 3: disconnecting
     if (mongoose.connection.readyState !== 1 && req.path.startsWith('/api')) {
         return res.status(503).json({
             message: 'Service Unavailable: Database not connected',
-            hint: 'Please check MONGODB_URI in environment variables'
+            hint: 'Please check MONGODB_URI in environment variables',
+            envStatus: process.env.MONGODB_URI ? 'URI Defined' : 'URI Missing'
         });
     }
     next();
 });
 
-// Database Connection
-connectDB();
+// Database Connection - Only attempt if URI is present
+if (process.env.MONGODB_URI) {
+    connectDB();
+} else {
+    console.error('SKIPPING DB CONNECTION: MONGODB_URI is missing');
+}
 
 // Routes
 app.use('/api/recipes', recipeRoutes);
