@@ -29,6 +29,7 @@ const adminLogin = async (req, res) => {
             res.status(400).json({ message: 'Invalid password' });
         }
     } catch (error) {
+        console.error('Admin Login Error:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };
@@ -54,6 +55,7 @@ const addRecipe = async (req, res) => {
 
         res.status(201).json(recipe);
     } catch (error) {
+        console.error('Admin Add Recipe Error:', error);
         res.status(400).json({ message: 'Error creating recipe' });
     }
 };
@@ -80,6 +82,7 @@ const updateRecipe = async (req, res) => {
         const updatedRecipe = await recipe.save();
         res.json(updatedRecipe);
     } catch (error) {
+        console.error('Admin Update Recipe Error:', error);
         res.status(400).json({ message: 'Error updating recipe' });
     }
 };
@@ -98,6 +101,7 @@ const deleteRecipe = async (req, res) => {
         await Recipe.findByIdAndDelete(req.params.id);
         res.json({ message: 'Recipe deleted successfully' });
     } catch (error) {
+        console.error('Admin Delete Recipe Error:', error);
         res.status(400).json({ message: 'Error deleting recipe' });
     }
 };
@@ -110,6 +114,7 @@ const getAllRecipes = async (req, res) => {
         const recipes = await Recipe.find({}).sort({ createdAt: -1 });
         res.json(recipes);
     } catch (error) {
+        console.error('Admin Get Recipes Error:', error);
         res.status(500).json({ message: 'Server error' });
     }
 };

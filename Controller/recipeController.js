@@ -33,6 +33,7 @@ const getRecipes = async (req, res) => {
         const recipes = await Recipe.find(query);
         res.json(recipes);
     } catch (error) {
+        console.error('Error in getRecipes:', error);
         res.status(500).json({ message: 'Server Error' });
     }
 };
@@ -58,6 +59,7 @@ const createRecipe = async (req, res) => {
         res.status(201).json(recipe);
 
     } catch (error) {
+        console.error('Error in createRecipe:', error);
         res.status(400).json({ message: 'Invalid recipe data' });
     }
 }
