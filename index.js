@@ -15,7 +15,10 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: ['https://singular-boba-04e055.netlify.app', 'http://localhost:5173', 'http://localhost:5000'],
+    credentials: true
+}));
 
 // Database Connection
 connectDB();
