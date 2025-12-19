@@ -29,8 +29,22 @@ app.use('/api/auth', authRoutes);
 app.use('/api/favorites', favoritesRoutes);
 app.use('/api/admin', adminRoutes);
 
+// Check for essential env vars
+if (!process.env.MONGODB_URI) {
+    console.error('FATAL ERROR: MONGODB_URI is not defined in environment variables.');
+    // We don't exit here immediately to allow the server to start and show the error on the root route for easier debugging,
+    // but the db connection attempting will likely fail/exit.
+}
+
 app.get('/', (req, res) => {
-    res.send('Recipe Suggestion App Backend is running');
+    const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
+    res.json({
+        message: 'Recipe Suggestion App Backend is running',
+        dbStatus,
+        envCheck: {
+            mongoURI: process.env.MONGODB_URI ? 'Defined' : 'Missing',
+        }
+    });
 });
 
 app.listen(PORT, () => {
