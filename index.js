@@ -22,8 +22,8 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-// Handle preflight requests explicitly
-app.options('*', cors(corsOptions));
+// Handle preflight requests explicitly - Removed for stability, app.use(cors) should handle it
+// app.options('*', cors(corsOptions));
 
 // Global error handling to prevent crashes
 process.on('uncaughtException', (err) => {
